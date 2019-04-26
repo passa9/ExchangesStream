@@ -1,5 +1,5 @@
 const WebSocket = require('ws');
-var exchangeWs = require("./../index").exchangeWs;
+var exchangeWs = require("../app").exchangeWs;
 var moment = require('moment');
 var fs = require('fs');
 

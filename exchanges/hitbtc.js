@@ -1,5 +1,5 @@
 const WebSocket = require('ws');
-var exchangeWs = require("./../index").exchangeWs;
+var exchangeWs = require("../app").exchangeWs;
 
 var connection;
 const url = 'wss://api.hitbtc.com/api/2/ws'
