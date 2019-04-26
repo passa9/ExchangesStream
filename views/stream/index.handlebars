@@ -1,0 +1,310 @@
+<br />
+<h3>Stream</h3>
+
+
+<hr />
+<div id='MessageHolder'></div>
+<a href="#" id="testAnchor"></a>
+
+<div class="row">
+    <div class="col">
+        <canvas id="canvas"></canvas>
+    </div>
+</div>
+<div class="row">
+    <div class="col col-md-4">
+        <div class="card card-primary">
+            <div class="card-header">
+                HitBTC
+            </div>
+            <ul id="hitbtcTrades" class="list-group list-group-flush">
+            </ul>
+        </div>
+    </div>
+    <div class="col col-md-4">
+        <div class="card card-primary">
+            <div class="card-header">
+                Binance
+            </div>
+            <ul id="binanceTrades" class="list-group list-group-flush">
+            </ul>
+        </div>
+    </div>
+
+    <div class="col col-md-4">
+        <div class="card card-primary">
+            <div class="card-header">
+                Bibox
+            </div>
+            <ul id="biboxTrades" class="list-group list-group-flush">
+            </ul>
+        </div>
+    </div>
+
+</div>
+<br>
+<br>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.js"></script>
+<script src="https://www.chartjs.org/samples/latest/utils.js"></script>
+
+<script>
+    const socket = new WebSocket('ws://' + window.location.hostname + ":" + location.port + "/exchangeWs"); 0
+    var lastHitBTC;
+    var amountHitBTC = 0;
+
+    var lastBinance;
+    var amountBinance = 0;
+
+    var lastBibox;
+    var amountBibox = 0;
+
+    var trades = [];
+
+    socket.onopen = () => {
+        socket.send('ws open');
+    }
+    socket.onmessage = (e) => {
+        var data = JSON.parse(event.data);
+
+        var colorClass = data.side == 'buy' ? 'text-success' : 'text-danger';
+        var li = $('<li></li>').addClass(colorClass + ' list-group-item').html('<div class="row"><div class="col">' + new Date(data.timestamp).toLocaleTimeString() + '</div><div class="col">' + data.quantity + '</div><div class="col">' + data.price + '</div></div>');
+
+        if (data.exchange == "hitbtc") {
+            lastHitBTC = data.price;
+            amountHitBTC += parseFloat(data.quantity);
+
+            if ($('#hitbtcTrades').children().length == 10) {
+                $('#hitbtcTrades').children().last().remove();
+            }
+            $('#hitbtcTrades').prepend(li);
+        }
+        else if (data.exchange == "binance") {
+            lastBinance = data.price;
+            amountBinance += parseFloat(data.quantity);
+
+            if ($('#binanceTrades').children().length == 10) {
+                $('#binanceTrades').children().last().remove();
+            }
+            $('#binanceTrades').prepend(li);
+        }
+
+        else if (data.exchange == "bibox") {
+            lastBibox = data.price;
+            amountBibox += parseFloat(data.quantity);
+
+            if ($('#biboxTrades').children().length == 10) {
+                $('#biboxTrades').children().last().remove();
+            }
+            $('#biboxTrades').prepend(li);
+        }
+    }
+
+    function updateExcel() {
+        if (lastHitBTC == undefined || lastBibox == undefined || lastBinance == undefined)
+            return;
+
+        trades.push({
+            timestamp: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString(),
+            lastHitBTC: lastHitBTC,
+            amountHitBTC: amountHitBTC,
+            lastBibox: lastBibox,
+            amountBibox: amountBibox,
+            lastBinance: lastBinance,
+            amountBinance: amountBinance
+        });
+
+        amountHitBTC = 0;
+        amountBibox = 0;
+        amountBinance = 0;
+    }
+
+    function refreshChart() {
+
+        //  updateExcel();
+
+        if (config.data.labels.length > 20) {
+            config.data.labels.splice(0, 1);
+            config.data.datasets.forEach(function (dataset) {
+                dataset.data.splice(0, 1);
+            });
+        }
+
+        var now = new Date();
+
+        config.data.labels.push(now.getMinutes() + ':' + now.getSeconds() + ':' + now.getMilliseconds());
+        config.data.datasets[0].data.push(lastHitBTC);
+        config.data.datasets[1].data.push(lastBinance);
+        config.data.datasets[2].data.push(lastBibox);
+
+        window.myLine.update();
+    }
+
+    var tab_text;
+    var data_type = 'data:application/vnd.ms-excel';
+
+
+    function CreateHiddenTable() {
+        var ColumnHead = "Column Header Text";
+        var TableMarkUp = '<table id="myModifiedTable" class="visibilityHide"><thead><tr>';
+
+        TableMarkUp += "<td><b>" + 'TIMESTAMP' + "</b></td>";
+        TableMarkUp += "<td><b>" + 'HITBTC LAST' + "</b></td>";
+        TableMarkUp += "<td><b>" + 'HITBTC AMOUNT' + "</b></td>";
+        TableMarkUp += "<td><b>" + 'BINANCE LAST' + "</b></td>";
+        TableMarkUp += "<td><b>" + 'BINANCE AMOUNT' + "</b></td>";
+        TableMarkUp += "<td><b>" + 'BIBOX LAST' + "</b></td>";
+        TableMarkUp += "<td><b>" + 'BIBOX AMOUNT' + "</b></td>";
+
+        TableMarkUp += '</tr></thead><tbody>'
+
+        for (i = 0; i < trades.length; i++) {
+            var trade = trades[i];
+
+            TableMarkUp += '<tr>';
+
+            TableMarkUp += '<td>' + trade.timestamp.toString().replace('.', ',') + '</td>';
+            TableMarkUp += '<td>' + trade.lastHitBTC.toString().replace('.', ',') + '</td>';
+            TableMarkUp += '<td>' + trade.amountHitBTC.toString().replace('.', ',') + '</td>';
+            TableMarkUp += '<td>' + trade.lastBinance.toString().replace('.', ',') + '</td>';
+            TableMarkUp += '<td>' + trade.amountBinance.toString().replace('.', ',') + '</td>';
+            TableMarkUp += '<td>' + trade.lastBibox.toString().replace('.', ',') + '</td>';
+            TableMarkUp += '<td>' + trade.amountBibox.toString().replace('.', ',') + '</td>';
+
+            TableMarkUp += '</tr>';
+        }
+
+        TableMarkUp += "</tbody></table>";
+        $('#MessageHolder').append(TableMarkUp);
+    }
+
+    function fnExcelReport() {
+
+        CreateHiddenTable();
+
+        tab_text = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">';
+        tab_text = tab_text + '<head><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet>';
+
+        tab_text = tab_text + '<x:Name>Error Messages</x:Name>';
+
+        tab_text = tab_text + '<x:WorksheetOptions><x:Panes></x:Panes></x:WorksheetOptions></x:ExcelWorksheet>';
+        tab_text = tab_text + '</x:ExcelWorksheets></x:ExcelWorkbook></xml></head><body>';
+
+        tab_text = tab_text + "<table border='1px'>";
+        tab_text = tab_text + $('#myModifiedTable').html();;
+        tab_text = tab_text + '</table></body></html>';
+
+        data_type = 'data:application/vnd.ms-excel';
+
+        var ua = window.navigator.userAgent;
+        var msie = ua.indexOf("MSIE ");
+
+        if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
+            if (window.navigator.msSaveBlob) {
+                var blob = new Blob([tab_text], {
+                    type: "application/csv;charset=utf-8;"
+                });
+                navigator.msSaveBlob(blob, 'Trades.xls');
+            }
+        } else {
+            console.log(data_type);
+            console.log(tab_text);
+            $('#testAnchor')[0].click()
+        }
+        $('#MessageHolder').html("");
+
+    }
+
+
+    var config = {
+        type: 'line',
+        data: {
+            labels: ['HitBTC', 'Binance', 'Bibox'],
+            datasets: [{
+                label: 'HitBTC',
+                backgroundColor: window.chartColors.red,
+                borderColor: window.chartColors.red,
+                data: [],
+                fill: false,
+            },
+            {
+                label: 'Binance',
+                backgroundColor: window.chartColors.blue,
+                borderColor: window.chartColors.blue,
+                data: [],
+                fill: false,
+            },
+            {
+                label: 'Bibox',
+                backgroundColor: window.chartColors.green,
+                borderColor: window.chartColors.green,
+                data: [],
+                fill: false,
+            },]
+        },
+        options: {
+            responsive: true,
+            title: {
+                display: true,
+                text: 'BTC/USDT'
+            },
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: true
+            },
+            scales: {
+                xAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Date'
+                    }
+                }],
+                yAxes: [{
+                    display: true,
+                    ticks: {
+                        //  fixedStepSize: 1
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Price'
+                    }
+                }],
+            }
+        }
+    };
+
+    window.onload = function () {
+        var ctx = document.getElementById('canvas').getContext('2d');
+        window.myLine = new Chart(ctx, config);
+        setInterval(refreshChart, 250);
+
+        $($("#testAnchor")[0]).click(function () {
+            console.log(data_type);
+            console.log(tab_text);
+            $('#testAnchor').attr('href', data_type + ', ' + encodeURIComponent(tab_text));
+            $('#testAnchor').attr('download', 'Trades.xls');
+        });
+    };
+
+</script>
+<style>
+    .list-group-item {
+        padding: 15px;
+        line-height: 1px;
+        font-size: 12px;
+    }
+
+    canvas {
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+    }
+
+    .visibilityHide {
+        visibility: hidden;
+    }
+</style>
