@@ -33,7 +33,7 @@ async function startWebsocket() {
                 exchange: "bitmex",
                 timestamp: new Date(trade.timestamp),
                 price: trade.price + 90,
-                quantity: trade.size,
+                quantity: trade.homeNotional,
                 side: trade.side == "Sell" ? "sell" : "buy"
             });
         });
