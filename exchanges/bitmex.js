@@ -32,7 +32,7 @@ async function startWebsocket() {
             exchangeWs({
                 exchange: "bitmex",
                 timestamp: new Date(trade.timestamp),
-                price: trade.price + 90,
+                price: trade.price,
                 quantity: trade.homeNotional,
                 side: trade.side == "Sell" ? "sell" : "buy"
             });
