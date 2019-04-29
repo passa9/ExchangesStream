@@ -12,6 +12,9 @@ var amountBinance = 0;
 var lastBibox;
 var amountBibox = 0;
 
+var lastBitmex;
+var amountBitmex = 0;
+
 var trades = [];
 
 var self = this;
@@ -23,10 +26,10 @@ self.init = async function () {
         console.log(`WebSocket error: ${error}`)
     }
     connection.onopen = () => {
-      //  updateExcel(getHeaderMessage());
+        //  updateExcel(getHeaderMessage());
         setInterval(() => {
-          //  updateExcel(getMessage())
-        }, 300); 
+            //  updateExcel(getMessage())
+        }, 300);
     }
     connection.onmessage = e => {
         var data = JSON.parse(e.data);
@@ -40,16 +43,19 @@ self.init = async function () {
         } else if (data.exchange == "bibox") {
             lastBibox = data.price;
             amountBibox += parseFloat(data.quantity);
+        } else if (data.exchange == "bitmex") {
+            lastBitmex = data.price;
+            amountBitmex += parseFloat(data.quantity);
         }
     }
 }
 
 function getMessage() {
 
-    if (lastHitBTC == undefined || lastBinance == undefined || lastBibox == undefined) 
+    if (lastHitBTC == undefined || lastBinance == undefined || lastBibox == undefined)
         return "";
 
-    var message = moment(new Date()).utcOffset('+0200').format("DD-MM-YYYY HH:mm:ss:SS") + ";";//new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString() + new Date().get ";";
+    var message = moment(new Date()).utcOffset('+0200').format("DD-MM-YYYY HH:mm:ss:SS") + ";"; //new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString() + new Date().get ";";
     message += lastHitBTC.toString().replace(".", ",") + ";";
     message += amountHitBTC.toString().replace(".", ",") + ";";
     message += lastBinance.toString().replace(".", ",") + ";";

@@ -76,10 +76,20 @@
 }
 
 @media only screen and (max-width: 600px) {
-  .col-balance{
+  .col-balance {
     width: auto;
   }
+
   .col-right {
     float: left;
+  }
+}
+
+@media only screen and (min-width: 1200px) {
+  .container {
+    width: 80% !important;
+    max-width: 80% !important;
+    margin-left: 10%;
+    margin-right: 10%;
   }
 }
