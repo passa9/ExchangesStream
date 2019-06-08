@@ -56,7 +56,7 @@ async function startWebsocket() {
                     timestamp: new Date(trade.time),
                     price: trade.price,
                     quantity: trade.amount,
-                    side: trade.side == 1 ? "buy" : "sell"
+                    side: trade.side == 1 ? "buy" : "sell" // 1 buy 2 sell
                 });
             });
         }

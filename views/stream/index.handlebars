@@ -142,7 +142,7 @@
         config.data.labels.push(now.getMinutes() + ':' + now.getSeconds() + ':' + now.getMilliseconds());
         config.data.datasets[0].data.push(lastHitBTC);
         config.data.datasets[1].data.push(lastBinance);
-        config.data.datasets[2].data.push(lastBitmex + 90);
+        config.data.datasets[2].data.push(lastBitmex);
         config.data.datasets[3].data.push(lastBibox);
 
         window.myLine.update();
@@ -207,7 +207,7 @@
     var config = {
         type: 'line',
         data: {
-            labels: ['HitBTC', 'Binance','Bitmex (+90$)', 'Bibox' ],
+            labels: ['HitBTC', 'Binance','Bitmex', 'Bibox' ],
             datasets: [{
                 label: 'HitBTC',
                 backgroundColor: window.chartColors.red,
@@ -224,11 +224,12 @@
             },
 
             {
-                label: 'Bitmex (+90$)',
+                label: 'Bitmex',
                 backgroundColor: window.chartColors.orange,
                 borderColor: window.chartColors.orange,
                 data: [],
                 fill: false,
+                hidden: true
             },
             {
                 label: 'Bibox',
