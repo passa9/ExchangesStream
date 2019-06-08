@@ -20,7 +20,7 @@ var trades = [];
 var self = this;
 
 self.init = async function () {
-    const url = 'ws://localhost:5000/exchangeWs'
+    const url = 'wss://localhost:5000/exchangeWs'
     const connection = new WebSocket(url);
     connection.onerror = error => {
         console.log(`WebSocket error: ${error}`)
