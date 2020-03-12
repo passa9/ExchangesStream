@@ -16,7 +16,6 @@ async function startWebsocket() {
     }
     connection.onopen = () => {
         var symbol = "BTCUSD";
-        //var symbol = "ADABTC";
         var ticker = {
             method: "subscribeTrades",
             params: {

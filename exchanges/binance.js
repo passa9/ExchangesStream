@@ -10,7 +10,6 @@ self.init = startWebsocket
 
 async function startWebsocket() {
 
-    /*    const url = 'wss://stream.binance.com:9443/ws/adabtc@trade' */
     connection = new WebSocket(url);
     connection.onerror = error => {
         console.log(`WebSocket error: ${error}`)

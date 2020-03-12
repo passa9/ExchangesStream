@@ -19,19 +19,10 @@ async function startWebsocket() {
             "channel": "bibox_sub_spot_BTC_USDT_deals",
             "binary": 1
         }
-        /*      var ticker = {
-                 "event": "addChannel",
-                 "channel": "bibox_sub_spot_ADA_BTC_deals",
-                 "binary": 1
-             } */
 
         connection.send(JSON.stringify(ticker));
     }
     connection.onmessage = e => {
-        //  console.log(e.data) //binary: "1"
-        //  channel: "bibox_sub_spot_BTC_USDT_deals"
-        //  data: "H4sIAAAAAAAA/xTLOw6CQBAG4Lv89YQwr8WdUr2BWBljiFBMgRLEynh34wG+ywfLkCsC+/5wO5+OPQhbzhOC3a21umN3dcKy5n1CwLiVplYQhvn5fmwISKNsRaRTEF45/jEhR4QU65iL6/f6CwAA//+92vqLagAAAA=="
-        //  data_type: 1
 
         var array = JSON.parse(e.data);
 
