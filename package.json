@@ -15,7 +15,7 @@
     "express-handlebars": "^3.0.2",
     "express-ws": "^4.0.0",
     "fs": "0.0.1-security",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "pako": "^1.0.10",
     "path": "^0.12.7",
     "ws": "^6.2.1"
